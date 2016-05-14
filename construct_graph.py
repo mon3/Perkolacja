@@ -26,6 +26,7 @@ def clusters(adj_matrix, N):
 
     changed = False
     value_for_change = 0
+    index = 0
 
     for i in range(N):
         if (K[i] == 0):
@@ -38,16 +39,17 @@ def clusters(adj_matrix, N):
                 value_for_change = K[j]
                 index = j
                 old_value = K[i]
-                K[i] = K[j]
+                K[i] = value_for_change
                 for l in range(i+1, index):
-                    if (K[l]==old_value):
+                    if (K[l] == old_value):
                          K[l] = value_for_change
             elif ((adj_matrix[i][j] == 1) & (K[j] != 0) & (changed == True)):
                 #value_for_change = K[j]
                 K[j] = value_for_change
                 
         changed = False
-        value_for_change = 0       
+        value_for_change = 0 
+        index = 0      
                 
     return K
 
@@ -65,24 +67,37 @@ def nodes(K,N): # K- cluster, N - number of all nodes
 def main():
     
     p = 0.3
-    N = 10
-
+    N = 1000
     # S - rozmiar klastra
     # S = N_G / N, gdzie N_G - liczba węzłów w największym klastrze
     # k - średni stopień, zależny od p
     # <k> = p(N-1)
 
-    k_average = np.arange(0.0,4.0,0.1)
+    k_average = np.arange(0.0,6.0,0.1)
+
+    S_array = []
+    for i in k_average:
+        probability = i/ (N-1)
+        adj_matrix = construct_graph(probability,N)
+        K = clusters(adj_matrix,N)
+        N_G = nodes(K,N)
+        S = N_G/N
+        S_array.append(S)
+
+   #print S_array
+
+    plt.plot(k_average, S_array, 'o--',color='g', label='zaleznosc')
+    plt.show()
 
 
-    adj_matrix = construct_graph(p,N)
-    print adj_matrix    
+    # adj_matrix = construct_graph(p,N)
+    # print adj_matrix    
 
-    K = clusters(adj_matrix,N)
-    print K
+    # K = clusters(adj_matrix,N)
+    # print K
     
-    N_G = nodes(K,N)
-    print N_G
+    # N_G = nodes(K,N)
+    # print N_G
 
 if __name__ == "__main__":
     main()
